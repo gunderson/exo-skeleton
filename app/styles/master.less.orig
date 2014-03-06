@@ -1,0 +1,23 @@
+<<<<<<< HEAD
+@import "vars";
+@import "../js/bower/html5-boilerplate/css/normalize.css";
+@import "../js/bower/html5-boilerplate/css/main.css";
+@import "../js/bower/lesshat/build/lesshat";
+@import "Fonts/font-awesome";
+@import "main";
+@import "UI/UI";
+@import "UI/Main-menu";
+@import "Global/Header";
+@import "Pages/Page";
+@import "Pages/Home";
+@import "Pages/Exterior";
+@import "Pages/Interior";
+@import "Components/Parallax-Image";
+=======
+@import "vars.less";
+@import "mixins.less";
+@import "../js/bower/html5-boilerplate/css/normalize.css";
+@import "../js/bower/html5-boilerplate/css/main.css";
+@import "../js/bower/lesshat/build/lesshat";
+@import "main";
+>>>>>>> 3963c3438ed0b32de816a83c82c3ba9096c0016b
