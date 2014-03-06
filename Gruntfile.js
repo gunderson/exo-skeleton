@@ -1,5 +1,8 @@
 module.exports = function (grunt) {
 
+	var _ = require("underscore");
+	var pkg = require('./package.json');
+
 	// point to your stuff!
 	var yeoman = {
 		almond: "app/js/bower/almond/almond",
@@ -12,10 +15,11 @@ module.exports = function (grunt) {
 		scripts: "app/js/",
 		templates: "app/templates/",
 		data: "app/data/",
-		images: "app/assets/imgs/",
+		images: "app/assets/images/",
 		fonts: "app/assets/fonts/",
 		videos: "app/assets/videos/",
-		sounds: "app/assets/sounds/"
+		sounds: "app/assets/sounds/",
+		copy: "app/data/copy_"
 
 	};
 
@@ -35,7 +39,7 @@ module.exports = function (grunt) {
 		php: {
 			options: {
 				// change this to '0.0.0.0' to access the server from outside
-				hostname: 'localhost',
+				hostname: '0.0.0.0',
 				port: 8888,
 				livereload: 35729,
 				base: yeoman.app,
@@ -60,7 +64,7 @@ module.exports = function (grunt) {
 			css: {
 				files: [
 					"Gruntfile.js",
-					yeoman.styles + "/*.less"
+					yeoman.styles + "/**/*.less"
 				],
 				tasks: "less"
 			},
@@ -70,7 +74,7 @@ module.exports = function (grunt) {
 					yeoman.templates + "/**/*.jade"
 
 				],
-				tasks: "jade"
+				tasks: ["jade:debug", "jade:flat"]
 			},
 			bower_json:{
 				files:[
@@ -120,6 +124,57 @@ module.exports = function (grunt) {
 				files: {
 					"<%= yeoman.templates %>jade_jst.js": [yeoman.templates + "/*.jade"]
 				}
+			},
+			flat: {
+				options: {
+					pretty: true,
+					compileDebug: false,
+					data: function(dest, src) {
+						// Return an object of data to pass to templates
+						var data = {
+							env: "dev",
+							version: pkg.version
+						};
+						return _.extend(data, {
+							constants:	require("./app/data/constants.json"),
+							copy:		require("./app/data/copy_en.json")
+						});
+					},
+					client: false, // compile to html
+					processName: function (filename) {
+						// give the JST a key that's relative to templates directory
+						return filename.replace(yeoman.templates, '').replace('.jade', '');
+					}
+				},
+				files: {
+					"<%= yeoman.app %>index.html": [yeoman.templates + "index.jade"]
+				}
+			},
+
+			flat_dist: {
+				options: {
+					pretty: false,
+					compileDebug: false,
+					data: function(dest, src) {
+						// Return an object of data to pass to templates
+						var data = {
+							env: "dist",
+							version: pkg.version
+						};
+						return _.extend(data, {
+							constants:	require("./app/data/constants.json"),
+							copy:		require("./app/data/copy_en.json")
+						});
+					},
+					client: false, // compile to html
+					processName: function (filename) {
+						// give the JST a key that's relative to templates directory
+						return filename.replace(yeoman.templates, '').replace('.jade', '');
+					}
+				},
+				files: {
+					"<%= yeoman.dist %>index.html": [yeoman.templates + "index.jade"]
+				}
 			}
 		},
 
@@ -131,7 +186,7 @@ module.exports = function (grunt) {
 			src: {
 				expand: true,
 				cwd: yeoman.styles,
-				src: "*.less",
+				src: ["master.less"],
 				dest: yeoman.styles,
 				ext: ".css"
 			}
@@ -155,7 +210,9 @@ module.exports = function (grunt) {
 						src: [
 							'*.{ico,txt}',
 							'.htaccess',
+							'router.php',
 							yeoman.data.replace(yeoman.app, "") + "**/*",
+							yeoman.images.replace(yeoman.app, "") + "**/*",
 							yeoman.fonts.replace(yeoman.app, "") + "**/*",
 							yeoman.sounds.replace(yeoman.app, "") + "**/*",
 							yeoman.videos.replace(yeoman.app, "") + "**/*"
@@ -179,12 +236,15 @@ module.exports = function (grunt) {
 					// Root application module.
 					name: "bower/almond/almond",
 
+					// TODO - make dist / dev options that will minify / not minify
+					optimize:"none",
+					// optimize:"uglify2",
+
 					// Include the main application.
 					insertRequire: ["master"],
 
 					// This will ensure the application runs after being built.
 					include: [
-
 						"app",
 						"master",
 						"router",
@@ -192,8 +252,8 @@ module.exports = function (grunt) {
 						"jade",
 						"jade_jst",
 						"backbone",
-						"backbone.layoutmanager"
-
+						"backbone.layoutmanager",
+						"jquery.transit"
 					]
 				}
 			}
@@ -201,9 +261,12 @@ module.exports = function (grunt) {
 
 		// https://github.com/gruntjs/grunt-contrib-cssmin
 		cssmin: {
+			options: {
+				compress: false
+			},
 			combine: {
 				files: {
-					"<%= yeoman.dist + 'styles.css' %>": [yeoman.styles + "master.css"]
+					"<%= yeoman.dist + 'css/styles.css' %>": [yeoman.styles + "master.css"]
 
 				}
 			}
@@ -220,20 +283,24 @@ module.exports = function (grunt) {
 					{
 						expand: true,
 						cwd: yeoman.app,
-						src: [yeoman.images.replace(yeoman.app, "") + '/*.{png,jpg,gif}'],
+						src: [yeoman.images.replace(yeoman.app, "") + '/**/*.{png,jpg,gif}'],
 						dest: yeoman.dist
 					}
 				]
 			}
 		},
 
-		// https://github.com/changer/grunt-targethtml
-		targethtml: {
+		//https://github.com/motherjones/grunt-html-smoosher
+		//Includes JS and CSS inline in the HTML page 
+		smoosher: {
 			dist: {
+				options: {
+					minify: true
+				},
 				files: {
-					'<%= yeoman.dist %>index.html': yeoman.app + 'index.html'
-				}
-			}
+					'<%= yeoman.dist %>index.html': '<%= yeoman.dist %>index.html',
+				},
+			},
 		},
 
 		// https://npmjs.org/package/grunt-ftpush
@@ -283,8 +350,6 @@ module.exports = function (grunt) {
 				command: "bower install"
 			}
 		}
-
-
 	};
 
 	grunt.initConfig(cfg);
@@ -304,8 +369,8 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-open');
 	grunt.loadNpmTasks('grunt-ftpush');
 	grunt.loadNpmTasks('grunt-modernizr');
-	grunt.loadNpmTasks("grunt-targethtml");
 	grunt.loadNpmTasks('grunt-concurrent');
+	grunt.loadNpmTasks('grunt-html-smoosher');
 
 
 	/**
@@ -315,9 +380,12 @@ module.exports = function (grunt) {
 	 */
 
 	// start watching files. also does an initial batch process of target files
+
+
 	grunt.registerTask("watcher", [
 		"shell",
 		"jade:debug",
+		"jade:flat",
 		"less",
 		"watch"
 	]);
@@ -326,28 +394,29 @@ module.exports = function (grunt) {
 	grunt.registerTask("server", [
 		"shell",
 		"less",
-		"jade",
+		"jade:debug",
+		"jade:flat",
 		"open:dev",
 		"concurrent:server"
 	]);
 
 	// save as above, but points to dist version
 	grunt.registerTask("server:dist", [
-		"open:dev",
 		"php:dist"
 	]);
 
 	// The release task will first run the debug tasks.  Following that, minify
 	// the built JavaScript and then minify the built CSS.
 	grunt.registerTask('build', [
-		"jade:dist",
-		"less",
 		'clean:dist',
+		'copy:dist',
+		"jade:flat_dist",
+		"less",
 		'requirejs',
 		'cssmin',
-		'copy:dist',
-		"imagemin",
-		"targethtml:dist"
+		"jade:dist",
+		// 'smoosher:dist',
+		"imagemin"
 	]);
 
 	// https://npmjs.org/package/grunt-ftpush

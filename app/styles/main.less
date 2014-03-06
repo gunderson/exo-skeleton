@@ -1,5 +1,10 @@
-@import "vars.less";
-@import "mixins.less";
+* {
+	box-sizing: border-box;
+}
+
+body{
+	overflow: hidden;
+}
 
 #main{
     position: absolute;
@@ -7,4 +12,34 @@
     left: 0;
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    background-color: #000;
+
+    .main-menu-open & {
+    	left: @main-menu-width / 2;
+    }
+
+    .transition(left 0.5s @ease-out-expo);
+
+    section > div{
+        padding-top: @header-height;
+    }
+}
+
+.full-bleed{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top:0;
+	left:0;
+}
+
+.page0{
+	// display: none;
+}
+.page1{
+	// display: none;
+}
+.page2{
+	// display: none;
 }

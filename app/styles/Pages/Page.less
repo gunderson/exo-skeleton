@@ -1,0 +1,57 @@
+.page-content{
+	overflow: hidden;
+	background-color: #000;
+	.pane{
+		position: absolute;
+		overflow: hidden;
+		top:0;
+		width: 100%;
+		height: 100%;
+		background-color: #000;
+	}
+	&.two-up{
+		.pane{
+			width: 50%;
+		}
+		.pane-a{
+			left:0;
+			// background-color: #f00;
+		}
+		.pane-b{
+			right:0;
+			// background-color: #f0f;
+		}
+	}
+
+	&.three-up{
+		.pane{
+		}
+		.pane-a{
+			left:0;
+			width: 35%;
+			// background-color: #f00;
+		}
+		.pane-b{
+			right:0;
+			// background-color: #f0f;
+			width: 65%;
+			height: 50%;
+		}
+		.pane-c{
+			top:auto;
+			right:0;
+			bottom:0;
+			// background-color: #ff0;
+			width: 65%;
+			height: 50%;
+		}
+	}
+	.img-holder{
+		background-position: 50% 50%;
+		background-repeat: no-repeat;
+		background-size: cover;
+	}
+	.scrolling{
+		background-repeat: repeat;
+	}
+}

@@ -1,14 +1,11 @@
 define(function (require, exports, module) {
 
-	require("modernizr");
-	require("conditionizr");
-
-	var constants = require('../data/constants');
-	var Webapp = require('util/extensions/Webapp');
+	var Webapp   = require('util/extensions/Webapp');
 	var Tracking = require("services/Tracking");
-	var Router = require("router");
+	var Router   = require("router");
 	var Backbone = require("backbone");
 	var MainView = require("views/Main");
+	var Header = require("views/Header");
 
 	Tracking.init();
 
@@ -18,9 +15,8 @@ define(function (require, exports, module) {
 	window.$main = $('#main');
 
 	var app = _.extend({}, Backbone.Events);
-	window.app = app;
 
-	app.constants = constants;
+	app.loopPages = true;
 
 
 	//--------------------------------------------------------------------------------
@@ -46,8 +42,9 @@ define(function (require, exports, module) {
 	app.initialize = function () {
 		app.onResize();
 
+		new Header().render();
+		app.main = new MainView({el: "#main"});
 		app.router = new Router();
-		app.main = new MainView();
 		app.main.once('afterRender', function(){
 			Backbone.history.start({
 				root: app.root

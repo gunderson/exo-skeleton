@@ -1,7 +1,7 @@
-div(style="text-align:center; margin-top:40px")
-    img(src="assets/imgs/exo-logo_120.png")
-
-    h1(style="text-transform:uppercase") exo-skeleton
-    strong project scaffolding that uses backbone and layoutmanager
-
-    p rendered at #{new Date()}
+main#main(role='main')
+	section.page0.full-bleed
+		include Pages/Home
+	section.page1.full-bleed
+		include Pages/Interior
+	section.page2.full-bleed 
+		include Pages/Exterior

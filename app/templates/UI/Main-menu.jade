@@ -1,0 +1,5 @@
+#main-menu
+	nav
+		- for (var i = 0; i < copy["main-menu"].nav.length; ++i) {
+			a.nav-item(href="#{copy["main-menu"].nav[i].href}") #{copy["main-menu"].nav[i].name}
+		- }
